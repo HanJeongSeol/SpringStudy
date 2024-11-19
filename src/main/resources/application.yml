@@ -1,0 +1,21 @@
+spring:
+  application:
+    name: SpringStudy
+  datasource:
+    url: jdbc:mysql://localhost:23306/hhcrud?characterEncoding=UTF-8&createDatabaseIfNotExist=true&useMysqlMetadata=true
+    username: root
+    password: hanjeong1!
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: create
+    show-sql: true
+server:
+  port: 8080
+
+logging:
+  file:
+    name: logs/application.log
+  level:
+    root: info
+    com.hhplus.springstudy: debug

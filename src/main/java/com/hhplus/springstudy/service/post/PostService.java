@@ -88,4 +88,13 @@ public class PostService {
         return PostMapper.toResponseDto(updatedPost);
     }
 
+    @Transactional
+    public void deletePost(Long postNo){
+        Post post = postRepository.findById(postNo)
+                .orElseThrow(() -> new BusinessException(ErrorCode.POST_ENTITY_NOT_FOUND));
+
+        post.setDeleteAt(1);    // 논리 삭제 처리, 0: 활성화 | 1: 비활성화
+        postRepository.save(post);
+    }
+
 }

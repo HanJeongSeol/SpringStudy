@@ -42,4 +42,9 @@ public class PostController {
         PostResponseDto responseDto = postService.updatePost(postNo, requestDto);
         return ResponseEntity.ok(ApiResponse.of(SuccessCode.BOARD_UPDATE_SUCCESS, responseDto));
     }
+    @DeleteMapping("/{postNo}")
+    public ResponseEntity<ApiResponse<Long>> deletePost(@PathVariable("postNo") Long postNo){
+        postService.deletePost(postNo);
+        return ResponseEntity.ok(ApiResponse.of(SuccessCode.BOARD_DELETE_SUCCESS, postNo));
+    }
 }

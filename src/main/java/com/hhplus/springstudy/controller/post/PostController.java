@@ -2,14 +2,13 @@ package com.hhplus.springstudy.controller.post;
 
 import com.hhplus.springstudy.common.constant.SuccessCode;
 import com.hhplus.springstudy.common.response.ApiResponse;
-import com.hhplus.springstudy.domain.post.Post;
 import com.hhplus.springstudy.dto.post.PostListResponseDto;
 import com.hhplus.springstudy.dto.post.PostResponseDto;
 import com.hhplus.springstudy.dto.post.PostSaveRequestDto;
+import com.hhplus.springstudy.dto.post.PostUpdateRequestDto;
 import com.hhplus.springstudy.service.post.PostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -36,5 +35,11 @@ public class PostController {
     public ResponseEntity<ApiResponse<PostResponseDto>> findPost(@PathVariable("postNo") Long postNo) {
         PostResponseDto responseDto = postService.getPost(postNo);
         return ResponseEntity.ok(ApiResponse.of(SuccessCode.BOARD_READ_SUCCESS, responseDto));
+    }
+
+    @PutMapping(value = "/{postNo}")
+    public ResponseEntity<ApiResponse<PostResponseDto>> updatePost(@PathVariable("postNo") Long postNo, @RequestBody PostUpdateRequestDto requestDto) {
+        PostResponseDto responseDto = postService.updatePost(postNo, requestDto);
+        return ResponseEntity.ok(ApiResponse.of(SuccessCode.BOARD_UPDATE_SUCCESS, responseDto));
     }
 }

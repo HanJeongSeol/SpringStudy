@@ -6,6 +6,7 @@ import com.hhplus.springstudy.domain.user.User;
 import com.hhplus.springstudy.dto.post.PostListResponseDto;
 import com.hhplus.springstudy.dto.post.PostResponseDto;
 import com.hhplus.springstudy.dto.post.PostSaveRequestDto;
+import com.hhplus.springstudy.dto.post.PostUpdateRequestDto;
 import com.hhplus.springstudy.exception.BusinessException;
 import com.hhplus.springstudy.repository.post.PostRepository;
 import com.hhplus.springstudy.repository.user.UserRepository;
@@ -54,6 +55,37 @@ public class PostService {
                 .orElseThrow(() -> new BusinessException(ErrorCode.POST_ENTITY_NOT_FOUND));
 
         return toResponseDto(post);
+    }
+
+    @Transactional
+    public PostResponseDto updatePost(Long postNo, PostUpdateRequestDto requestDto) {
+        // 게시글 조회
+        Post post = postRepository.findById(postNo)
+                .orElseThrow(() -> new BusinessException(ErrorCode.POST_ENTITY_NOT_FOUND));
+
+        // 게시글 작성자 확인
+        User user = post.getUser();
+        if (!user.getUserId().equals(requestDto.getUserId())) {
+            throw new BusinessException(ErrorCode.USER_ID_UNAUTHORIZED);
+        }
+
+        // 비밀번호 확인
+        if (!user.getUserPassword().equals(requestDto.getUserPassword())) {
+            throw new BusinessException(ErrorCode.USER_PASSWORD_UNAUTHORIZED);
+        }
+
+        // 삭제된 게시글인지 확인
+        if(post.getDeleteAt() == 1){
+            throw new BusinessException(ErrorCode.POST_ENTITY_NOT_FOUND,"삭제된 게시글입니다.");
+        }
+
+        // 게시글 수정
+        post.setPostTitle(requestDto.getPostTitle());
+        post.setPostContent(requestDto.getPostContent());
+
+        Post updatedPost = postRepository.save(post);
+
+        return PostMapper.toResponseDto(updatedPost);
     }
 
 }

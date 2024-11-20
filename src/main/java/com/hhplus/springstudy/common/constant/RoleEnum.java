@@ -12,9 +12,9 @@ public enum RoleEnum {
     private final String name;
     private final String content;
 
-    public static RoleEnum findByKey(String key){
+    public static RoleEnum findById(String id){
         for(RoleEnum role : values()){
-            if(role.getId().equals(key)){
+            if(role.getId().equals(id)){
                 return role;
             }
         }

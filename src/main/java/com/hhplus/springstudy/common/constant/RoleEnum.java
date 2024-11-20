@@ -5,15 +5,16 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum RoleEnum {
-    USER("ROLE_USER", "일반 사용자"),
-    ADMIN("ROLE_ADMIN", "전체 관리자");
+    USER("ROLE_USER", "일반 사용자", "기본 사용자 권한"),
+    ADMIN("ROLE_ADMIN", "전체 관리자","전체 관리자 권한");
 
-    private final String key;
-    private final String title;
+    private final String id;
+    private final String name;
+    private final String content;
 
     public static RoleEnum findByKey(String key){
         for(RoleEnum role : values()){
-            if(role.getKey().equals(key)){
+            if(role.getId().equals(key)){
                 return role;
             }
         }

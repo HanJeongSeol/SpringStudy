@@ -3,6 +3,7 @@ package com.hhplus.springstudy.service.post;
 import com.hhplus.springstudy.common.constant.ErrorCode;
 import com.hhplus.springstudy.domain.post.Post;
 import com.hhplus.springstudy.domain.user.User;
+import com.hhplus.springstudy.dto.post.PostListResponseDto;
 import com.hhplus.springstudy.dto.post.PostResponseDto;
 import com.hhplus.springstudy.dto.post.PostSaveRequestDto;
 import com.hhplus.springstudy.exception.BusinessException;
@@ -11,6 +12,11 @@ import com.hhplus.springstudy.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+
+import static com.hhplus.springstudy.service.post.PostMapper.toListResponseDto;
+import static com.hhplus.springstudy.service.post.PostMapper.toResponseDto;
 
 @Service
 @RequiredArgsConstructor
@@ -31,7 +37,15 @@ public class PostService {
         post.setDeleteAt(0);
 
         Post savePost = postRepository.save(post);
-        return PostMapper.toResponseDto(savePost);
+        return toResponseDto(savePost);
+    }
+
+    @Transactional(readOnly = true)
+    public List<PostListResponseDto> getAllPosts(){
+        List<Post> posts = postRepository.findAll();
+        return posts.stream()
+                .map(post->toListResponseDto(post))
+                .toList();
     }
 
 }

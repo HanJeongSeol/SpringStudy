@@ -48,4 +48,12 @@ public class PostService {
                 .toList();
     }
 
+    @Transactional
+    public PostResponseDto getPost(Long postNo){
+        Post post = postRepository.findById(postNo)
+                .orElseThrow(() -> new BusinessException(ErrorCode.POST_ENTITY_NOT_FOUND));
+
+        return toResponseDto(post);
+    }
+
 }

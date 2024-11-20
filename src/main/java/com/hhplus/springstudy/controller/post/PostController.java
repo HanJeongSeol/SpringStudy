@@ -31,4 +31,10 @@ public class PostController {
         List<PostListResponseDto> postList = postService.getAllPosts();
         return ResponseEntity.ok(ApiResponse.of(SuccessCode.BOARD_ALL_READ_SUCCESS, postList));
     }
+
+    @GetMapping("/{postNo}")
+    public ResponseEntity<ApiResponse<PostResponseDto>> findPost(@PathVariable("postNo") Long postNo) {
+        PostResponseDto responseDto = postService.getPost(postNo);
+        return ResponseEntity.ok(ApiResponse.of(SuccessCode.BOARD_READ_SUCCESS, responseDto));
+    }
 }

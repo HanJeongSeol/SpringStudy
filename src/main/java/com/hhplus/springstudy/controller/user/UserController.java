@@ -2,6 +2,7 @@ package com.hhplus.springstudy.controller.user;
 
 import com.hhplus.springstudy.common.constant.SuccessCode;
 import com.hhplus.springstudy.common.response.ApiResponse;
+import com.hhplus.springstudy.dto.user.UserRequestDto;
 import com.hhplus.springstudy.dto.user.UserResponseDto;
 import com.hhplus.springstudy.dto.user.UserSaveRequestDto;
 import com.hhplus.springstudy.service.user.UserService;
@@ -22,5 +23,11 @@ public class UserController {
     public ResponseEntity<ApiResponse<UserResponseDto>> registerUser(@RequestBody UserSaveRequestDto requestDto){
         UserResponseDto responseDto = userService.registerUser(requestDto);
         return ResponseEntity.ok(ApiResponse.of(SuccessCode.USER_CREATE_SUCCESS, responseDto));
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<ApiResponse<UserResponseDto>> loginUser(@RequestBody UserRequestDto requestDto){
+        UserResponseDto responseDto = userService.loginUser(requestDto);
+        return ResponseEntity.ok(ApiResponse.of(SuccessCode.USER_LOGIN_SUCCESS, responseDto));
     }
 }

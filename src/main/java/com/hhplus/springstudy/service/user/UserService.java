@@ -4,6 +4,7 @@ import com.hhplus.springstudy.common.constant.ErrorCode;
 import com.hhplus.springstudy.common.constant.RoleEnum;
 import com.hhplus.springstudy.domain.role.Role;
 import com.hhplus.springstudy.domain.user.User;
+import com.hhplus.springstudy.dto.user.UserRequestDto;
 import com.hhplus.springstudy.dto.user.UserResponseDto;
 import com.hhplus.springstudy.dto.user.UserSaveRequestDto;
 import com.hhplus.springstudy.exception.BusinessException;
@@ -58,5 +59,16 @@ public class UserService {
         // 6. 성공 메시지 반환
         return UserMapper.toResponseDto(saveUser);
 
+    }
+
+    @Transactional
+    public UserResponseDto loginUser(UserRequestDto requestDto){
+
+        User user = userRepository.findByUserId(requestDto.getUserId())
+                .orElseThrow(() -> new BusinessException(ErrorCode.USER_ID_NOT_FOUND));
+        if(!user.getUserPassword().equals(requestDto.getUserPassword())){
+            throw new BusinessException(ErrorCode.USER_PASSWORD_UNAUTHORIZED);
+        }
+        return UserMapper.toResponseDto(user);
     }
 }

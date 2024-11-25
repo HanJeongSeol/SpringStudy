@@ -44,6 +44,19 @@ public class User extends BaseTimeEntity {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<UserRole> userRoles = new ArrayList<>();
 
+    /**
+     * 신규 계정 생성 메서드
+     *
+     * @param userId
+     * @param userPassword
+     * @param userName
+     */
+    public User(String userId, String userPassword, String userName){
+        this.userId = userId;
+        this.userPassword = userPassword;
+        this.userName = userName;
+    }
+
     public void addRole(Role role){
         UserRole userRole = new UserRole();
         userRole.setUser(this);

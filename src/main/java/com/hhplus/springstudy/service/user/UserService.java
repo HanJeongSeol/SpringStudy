@@ -31,24 +31,10 @@ public class UserService {
         }
 
         // 2. User 엔티티 생성
-        User user = new User();
-        user.setUserId(requestDto.getUserId());
-        user.setUserPassword(requestDto.getUserPassword());
-        user.setUserName(requestDto.getUserName());
+        User user = new User(requestDto.getUserId(), requestDto.getUserPassword(), requestDto.getUserName());
 
         // 3. 입력받은 권한이 DB에 존재하는지 확인
-        List<String> roleIds = requestDto.getRoleIds();
-        if (roleIds == null || roleIds.isEmpty()) {
-            roleIds = List.of(RoleEnum.USER.getId());
-        }
-
-        List<Role> roles = roleIds.stream()
-                .map(roleId -> {
-                    // 실제 Role 테이블에 데이터가 존재하는지 확인
-                    return roleRepository.findByRoleId(roleId)
-                            .orElseThrow(() -> new BusinessException(ErrorCode.ROLE_ENTITY_NOT_FOUND));
-                })
-                .toList();
+        List<Role> roles = resolveRoles(requestDto.getRoleIds());
 
         // 4. User 객체에 UserRole 등록
         roles.forEach(role -> user.addRole(role));
@@ -71,4 +57,25 @@ public class UserService {
         }
         return UserMapper.toResponseDto(user);
     }
+
+    /**
+     * 회원 가입시 입력받은 권한이 DB에 존재하는지 확인.
+     * 없다면 Default 값으로 USER 권한 부여.
+     *
+     * @param roleIds
+     * @return
+     */
+    public List<Role> resolveRoles(List<String> roleIds){
+        if(roleIds == null || roleIds.isEmpty()){
+            roleIds = List.of(RoleEnum.USER.getId());
+        }
+
+        return roleIds.stream()
+                .map(roleId -> {
+                    return roleRepository.findByRoleId(roleId)
+                            .orElseThrow(() -> new BusinessException(ErrorCode.ROLE_ENTITY_NOT_FOUND));
+                })
+                .toList();
+    }
+
 }

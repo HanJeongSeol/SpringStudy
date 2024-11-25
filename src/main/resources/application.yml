@@ -10,6 +10,15 @@ spring:
     hibernate:
       ddl-auto: create
     show-sql: true
+
+token:
+  # AccessToken 만료 시간
+  expiration_time: 7200000
+  # RefreshToken 만료 시간
+  refresh_time: 86400000
+  # 최신 jjwt 라이브러리는 보안을 위해 32자 이상의 secret키 값을 설정해야 한다.
+  secret: 'thisIsASecretKeyWithMoreThan32CharactersLongForJwtSecurity'
+
 server:
   port: 8080
 

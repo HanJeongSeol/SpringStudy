@@ -40,7 +40,7 @@ public class PostService {
     public List<PostListResponseDto> getAllPosts(){
         List<Post> posts = postRepository.findAll();
         return posts.stream()
-                .filter(post -> !post.getDeleteAt().equals(0))
+                .filter(post -> post.getDeleteAt().equals(0))
                 .map(post -> toListResponseDto(post))
                 .toList();
     }

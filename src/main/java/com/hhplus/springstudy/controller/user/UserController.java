@@ -19,13 +19,13 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserController {
     private final UserService userService;
 
-    @PostMapping("/register")
+    @PostMapping("/join")
     public ResponseEntity<ApiResponse<UserResponseDto>> registerUser(@RequestBody UserSaveRequestDto requestDto){
         UserResponseDto responseDto = userService.registerUser(requestDto);
         return ResponseEntity.ok(ApiResponse.of(SuccessCode.USER_CREATE_SUCCESS, responseDto));
     }
 
-    @PostMapping("/login")
+    @PostMapping
     public ResponseEntity<ApiResponse<UserResponseDto>> loginUser(@RequestBody UserRequestDto requestDto){
         UserResponseDto responseDto = userService.loginUser(requestDto);
         return ResponseEntity.ok(ApiResponse.of(SuccessCode.USER_LOGIN_SUCCESS, responseDto));

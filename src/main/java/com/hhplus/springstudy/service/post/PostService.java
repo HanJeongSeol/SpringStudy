@@ -30,12 +30,7 @@ public class PostService {
         User user = userRepository.findByUserId(requestDto.getUserId())
                 .orElseThrow(() -> new BusinessException(ErrorCode.USER_ID_NOT_FOUND));
 
-        Post post = new Post();
-        post.setPostTitle(requestDto.getPostTitle());
-        post.setPostContent(requestDto.getPostContent());
-        post.setUser(user);
-        // @Column의 columnDefinition에 의해 기본 값으로 처리되지만, 유지보수를 위해 코드에 명시적으로 할당
-        post.setDeleteAt(0);
+        Post post = new Post(requestDto.getPostTitle(), requestDto.getPostContent(), user);
 
         Post savePost = postRepository.save(post);
         return toResponseDto(savePost);
@@ -45,13 +40,15 @@ public class PostService {
     public List<PostListResponseDto> getAllPosts(){
         List<Post> posts = postRepository.findAll();
         return posts.stream()
-                .map(post->toListResponseDto(post))
+                .filter(post -> post.getDeleteAt().equals(0))
+                .map(post -> toListResponseDto(post))
                 .toList();
     }
 
     @Transactional
     public PostResponseDto getPost(Long postNo){
         Post post = postRepository.findById(postNo)
+                .filter(p -> p.getDeleteAt().equals(0))
                 .orElseThrow(() -> new BusinessException(ErrorCode.POST_ENTITY_NOT_FOUND));
 
         return toResponseDto(post);
@@ -61,6 +58,7 @@ public class PostService {
     public PostResponseDto updatePost(Long postNo, PostUpdateRequestDto requestDto) {
         // 게시글 조회
         Post post = postRepository.findById(postNo)
+                .filter(p -> p.getDeleteAt().equals(0))
                 .orElseThrow(() -> new BusinessException(ErrorCode.POST_ENTITY_NOT_FOUND));
 
         // 게시글 작성자 확인
@@ -80,12 +78,14 @@ public class PostService {
         }
 
         // 게시글 수정
-        post.setPostTitle(requestDto.getPostTitle());
-        post.setPostContent(requestDto.getPostContent());
+        post.postUpdate(requestDto.getPostTitle(), requestDto.getPostContent());
 
-        Post updatedPost = postRepository.save(post);
+        return toResponseDto(post);
 
-        return PostMapper.toResponseDto(updatedPost);
+        // 영속성 컨텍스트로 인하여 별도의 save 메서드가 필요 없다.
+//        Post updatedPost = postRepository.save(post);
+//
+//        return PostMapper.toResponseDto(updatedPost);
     }
 
     @Transactional
@@ -93,7 +93,7 @@ public class PostService {
         Post post = postRepository.findById(postNo)
                 .orElseThrow(() -> new BusinessException(ErrorCode.POST_ENTITY_NOT_FOUND));
 
-        post.setDeleteAt(1);    // 논리 삭제 처리, 0: 활성화 | 1: 비활성화
+        post.delete();
         postRepository.save(post);
     }
 

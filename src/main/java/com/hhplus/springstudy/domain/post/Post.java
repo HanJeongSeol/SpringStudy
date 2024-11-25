@@ -31,4 +31,20 @@ public class Post extends BaseTimeEntity {
     @ManyToOne
     @JoinColumn(name = "user_no", nullable = false)
     private User user;
+
+    public Post(String postTitle, String postContent, User user) {
+        this.postTitle = postTitle;
+        this.postContent = postContent;
+        this.user = user;
+        this.deleteAt = 0;
+    }
+
+    public void postUpdate(String postTitle, String postContent){
+        this.postTitle = postTitle;
+        this.postContent = postContent;
+    }
+
+    public void delete(){
+        this.deleteAt = 1;
+    }
 }

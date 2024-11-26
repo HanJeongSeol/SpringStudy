@@ -17,7 +17,7 @@ public class JwtTokenProvider {
     private final Key key;
     private final long accessTokenExpTime;
 
-    public JwtTokenProvider(@Value("${token.secret") String secretKey, @Value("${token.expiration_time") long expirationTime){
+    public JwtTokenProvider(@Value("${token.secret}") String secretKey, @Value("${token.expiration_time}") long expirationTime){
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
         this.key = Keys.hmacShaKeyFor(keyBytes);
         this.accessTokenExpTime = expirationTime;

@@ -26,6 +26,7 @@ public enum ErrorCode {
     POST_ENTITY_NOT_FOUND(HttpStatus.NOT_FOUND, "게시글이 존재하지 않습니다."),
 
     // 권한 관련 에러 코드
+    ACCESS_DENIED(HttpStatus.FORBIDDEN, "접근 권한이 없습니다."),
     ROLE_ENTITY_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 권한이 존재하지 않습니다.");
 
 

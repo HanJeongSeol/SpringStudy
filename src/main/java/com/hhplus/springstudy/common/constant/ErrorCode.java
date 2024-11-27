@@ -18,11 +18,15 @@ public enum ErrorCode {
     // 인증 관련 에러
     USER_ID_UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "권한이 없습니다."),
     USER_PASSWORD_UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "비밀번호가 일치하지 않습니다."),
+    JWT_TOKEN_EXPIRED(HttpStatus.UNAUTHORIZED, "토큰이 만료되었습니다."),
+    JWT_TOKEN_INVALID(HttpStatus.UNAUTHORIZED, "유효하지 않은 토큰입니다."),
+    JWT_TOKEN_MISSING(HttpStatus.UNAUTHORIZED, "토큰이 요청에 없습니다."),
 
     // 게시글 관련 에러 코드
     POST_ENTITY_NOT_FOUND(HttpStatus.NOT_FOUND, "게시글이 존재하지 않습니다."),
 
     // 권한 관련 에러 코드
+    ACCESS_DENIED(HttpStatus.FORBIDDEN, "접근 권한이 없습니다."),
     ROLE_ENTITY_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 권한이 존재하지 않습니다.");
 
 

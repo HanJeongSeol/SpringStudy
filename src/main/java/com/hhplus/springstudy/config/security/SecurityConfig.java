@@ -21,6 +21,9 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SecurityConfig {
 
     private final JwtTokenProvider jwtTokenProvider;
+    private final CustomAuthenticationEntryPoint authenticationEntryPoint;
+    private final CustomAccessDeniedHandler accessDeniedHandler;
+    private final
 
     //Http Methpd : Get 인증예외 List
     private String[] AUTH_GET_WHITELIST = {
@@ -39,8 +42,12 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(AUTH_WHITELIST).permitAll()  // 인증이 필요없는 요청
                         .requestMatchers(HttpMethod.GET, AUTH_GET_WHITELIST).permitAll()
+                        .requestMatchers("/api/admin/**").hasRole("ADMIN")  // ROLE_ADMIN만 접근 가능하도록 설정
                         .anyRequest().authenticated()   // 나머지 요청에 대해서 인증 필요
                 )
+                .exceptionHandling(ex -> ex
+                        .authenticationEntryPoint(authenticationEntryPoint) // 인증 실패 처리
+                        .accessDeniedHandler(accessDeniedHandler))  // 권한 부족 처리
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));  // JWT 토큰 사용으로 세션 사용 안함
         return http.build();
     }

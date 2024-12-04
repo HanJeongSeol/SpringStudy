@@ -3,12 +3,11 @@ package com.hhplus.springstudy.exception;
 import com.hhplus.springstudy.common.constant.ErrorCode;
 import com.hhplus.springstudy.common.response.ErrorResponse;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.coyote.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.web.access.AccessDeniedHandler;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -21,6 +20,15 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleBusinessException(BusinessException ex) {
         ErrorResponse errorResponse = ErrorResponse.of(ex.getErrorCode(), ex.getMessage());
         return new ResponseEntity<>(errorResponse, ex.getErrorCode().getHttpStatus());
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ErrorResponse> handleValidationException(MethodArgumentNotValidException ex){
+        String errorMessage = ex.getBindingResult().getFieldError().getDefaultMessage();
+        log.error("Validation Error : {}", errorMessage);
+
+        ErrorResponse errorResponse = ErrorResponse.of(ErrorCode.GLOBAL_VALIDATION_ERROR, errorMessage);
+        return new ResponseEntity<>(errorResponse, ErrorCode.GLOBAL_VALIDATION_ERROR.getHttpStatus());
     }
 
     @ExceptionHandler(AuthenticationException.class)

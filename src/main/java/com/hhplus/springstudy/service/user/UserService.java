@@ -11,6 +11,7 @@ import com.hhplus.springstudy.exception.BusinessException;
 import com.hhplus.springstudy.repository.role.RoleRepository;
 import com.hhplus.springstudy.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +23,7 @@ import java.util.List;
 public class UserService {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Transactional(propagation = Propagation.REQUIRED)
     public UserResponseDto registerUser(UserSaveRequestDto requestDto) {
@@ -29,9 +31,11 @@ public class UserService {
         if (userRepository.findByUserId(requestDto.getUserId()).isPresent()) {
             throw new BusinessException(ErrorCode.USER_ID_DUPLICATE_INPUT);
         }
+        // 비밀번호 암호화 추가
+        String encryptPassword = passwordEncoder.encode(requestDto.getUserPassword());
 
         // 2. User 엔티티 생성
-        User user = new User(requestDto.getUserId(), requestDto.getUserPassword(), requestDto.getUserName());
+        User user = new User(requestDto.getUserId(), encryptPassword, requestDto.getUserName());
 
         // 3. 입력받은 권한이 DB에 존재하는지 확인
         List<Role> roles = resolveRoles(requestDto.getRoleIds());

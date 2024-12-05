@@ -2,12 +2,14 @@ package com.hhplus.springstudy.controller.user;
 
 import com.hhplus.springstudy.common.constant.SuccessCode;
 import com.hhplus.springstudy.common.response.ApiResponse;
+import com.hhplus.springstudy.dto.user.UserLoginResponseDto;
 import com.hhplus.springstudy.dto.user.UserRequestDto;
 import com.hhplus.springstudy.dto.user.UserResponseDto;
 import com.hhplus.springstudy.dto.user.UserSaveRequestDto;
 import com.hhplus.springstudy.service.user.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -27,8 +29,15 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<ApiResponse<UserResponseDto>> loginUser(@RequestBody UserRequestDto requestDto){
-        UserResponseDto responseDto = userService.loginUser(requestDto);
-        return ResponseEntity.ok(ApiResponse.of(SuccessCode.USER_LOGIN_SUCCESS, responseDto));
+    public ResponseEntity<ApiResponse<UserLoginResponseDto>> loginUser(@RequestBody UserRequestDto requestDto){
+//        UserResponseDto responseDto = userService.loginUser(requestDto);
+//        return ResponseEntity.ok(ApiResponse.of(SuccessCode.USER_LOGIN_SUCCESS, responseDto));
+        // 1. 인증 수행
+        UserLoginResponseDto responseDto = userService.authenticateAndGenerateToken(requestDto);
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + responseDto.getAccessToken())
+                .body(ApiResponse.of(SuccessCode.USER_LOGIN_SUCCESS, responseDto));
+
     }
 }

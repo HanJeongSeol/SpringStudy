@@ -2,7 +2,6 @@ package com.hhplus.springstudy.config.security;
 
 import com.hhplus.springstudy.domain.user.User;
 import com.hhplus.springstudy.domain.user_role.UserRole;
-import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -11,17 +10,17 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 /**
- * 스프링 시큐리티가 인증 및 권한 처리하는 데 필요한 사용자 정보를 제고앟는 역할
+ * 스프링 시큐리티가 인증 및 권한 처리하는 데 필요한 사용자 정보를 제공하는 역할
  * 사용자 인증에 필요한 username, password 제공
  * 사용자가 가진 역할 정보 제공
  * 계정 상태 반환
  */
-@Getter
 public class CustomUserDetails implements UserDetails {
 
     // 1. 테이블에 사용자 상태 컬럼이 추가되는 경우, 상태 필드 변수를 추가해서 사용하면 된다.
     private final String username;
     private final String password;
+    private final String userName;
     private final Collection<? extends GrantedAuthority> authorities;
 
     // 2. DB에서 조회한 User 객체를 기반으로 UserDetails에 필요한 데이터 설정
@@ -29,6 +28,7 @@ public class CustomUserDetails implements UserDetails {
     public CustomUserDetails(User user){
         this.username = user.getUserId();
         this.password = user.getUserPassword();
+        this.userName = user.getUserName();
         this.authorities = mapRolesToAuthorites(user.getUserRoles());
     }
 
@@ -83,5 +83,9 @@ public class CustomUserDetails implements UserDetails {
     @Override
     public String getUsername() {
         return username;
+    }
+
+    public String getUserName(){
+        return userName;
     }
 }

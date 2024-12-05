@@ -2,8 +2,6 @@ package com.hhplus.springstudy.config.security;
 
 import com.hhplus.springstudy.config.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -17,7 +15,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.web.servlet.HandlerExceptionResolver;
 
 @Configuration
 @EnableWebSecurity
@@ -30,12 +27,12 @@ public class SecurityConfig {
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
     //Http Methpd : Get 인증예외 List
-    private String[] AUTH_GET_WHITELIST = {
+    private final String[] AUTH_GET_WHITELIST = {
             "/api/posts"    // 모든 게시글 조회
     };
 
     // 인증 예외 List
-    private String[] AUTH_WHITELIST = {
+    private final String[] AUTH_WHITELIST = {
             "/api/users/**" // 회원가입 및 로그인
 
     };

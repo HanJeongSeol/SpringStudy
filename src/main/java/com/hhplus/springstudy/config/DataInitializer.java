@@ -7,8 +7,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
-
 /**
  * 애플리케이션 처음 실행 시, Role 테이블에 기본 테이터를 자동으로 추가하기 위한 클래스
  */

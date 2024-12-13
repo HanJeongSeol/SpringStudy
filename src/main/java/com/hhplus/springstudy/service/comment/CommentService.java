@@ -1,7 +1,6 @@
 package com.hhplus.springstudy.service.comment;
 
 import com.hhplus.springstudy.common.constant.ErrorCode;
-import com.hhplus.springstudy.config.security.CustomPrincipal;
 import com.hhplus.springstudy.domain.comment.Comment;
 import com.hhplus.springstudy.domain.comment.CommentHierarchy;
 import com.hhplus.springstudy.domain.post.Post;
@@ -13,13 +12,14 @@ import com.hhplus.springstudy.repository.comment.CommentHierarchyRepository;
 import com.hhplus.springstudy.repository.comment.CommentRepository;
 import com.hhplus.springstudy.repository.post.PostRepository;
 import com.hhplus.springstudy.repository.user.UserRepository;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor    
@@ -72,5 +72,68 @@ public class CommentService {
 
         return CommentMapper.toResponseDto(savedComment, savedHierarchy, replies); 
     }
-}
 
+    /**
+     * 게시글의 모든 댓글 조회
+     */
+    @Transactional(readOnly = true)
+    public List<CommentResponseDto> getAllCommentByPost(Long postNo){
+        // 1. 게시글 조회
+        Post post = postRepository.findById(postNo)
+            .filter(p->p.getDeleteAt().equals(0))
+            .orElseThrow(() -> new BusinessException(ErrorCode.POST_ENTITY_NOT_FOUND));
+
+        // 2. 게시글의 모든 댓글 조회
+        List<Comment> comments = commentRepository.findByPostAndDeleteAt(post, 0);
+        
+        // 3. 댓글들의 계층 구조 정보 조회
+        List<CommentHierarchy> hierarchies = comments.stream()
+            .map(comment -> commentHierarchyRepository.findByCommentNo(comment)
+                .orElseThrow(() -> new BusinessException(ErrorCode.COMMENT_HIERARCHY_NOT_FOUND)))
+            .collect(Collectors.toList());
+
+        return buildHierarchicalStructure(comments, hierarchies);
+    }
+
+    /**
+     * 계층 구조로 댓글 반환 
+     */
+    private List<CommentResponseDto> buildHierarchicalStructure(List<Comment> comments, List<CommentHierarchy> hierarchies){
+        // 1. 루트 댓글 필터링
+        List<CommentResponseDto> rootComments = new ArrayList<>();
+
+        // 2. 부모 댓글 번호를 키로 하는 자식 댓글 맵 생성
+        Map<Long, List<CommentHierarchy>> childrenMap = hierarchies.stream()
+                .filter(h -> h.getParentCommentNo() != null)
+                .collect(Collectors.groupingBy(h -> h.getParentCommentNo().getCommentNo()));
+
+        // 3. 계층 구조 생성 
+        for(CommentHierarchy hierarchy : hierarchies){
+            if(hierarchy.getParentCommentNo() == null){
+                // 루트 댓글인 경우
+                Comment comment = hierarchy.getCommentNo();
+                List<CommentResponseDto> replies = buildReplies(comment.getCommentNo(), childrenMap);
+                rootComments.add(CommentMapper.toResponseDto(comment,hierarchy,replies));
+            }
+        }
+
+        return rootComments;
+    }
+
+    /**
+     * 대댓글 목록 생성
+     */
+    private List<CommentResponseDto> buildReplies(Long parentCommentNo, Map<Long, List<CommentHierarchy>> childrenMap){
+        List<CommentResponseDto> replies = new ArrayList<>();
+        List<CommentHierarchy> children = childrenMap.get(parentCommentNo);
+
+        if(children != null){
+            for(CommentHierarchy child : children){
+                Comment childComment = child.getCommentNo();
+                List<CommentResponseDto> childReplies = buildReplies(childComment.getCommentNo(), childrenMap);
+                replies.add(CommentMapper.toResponseDto(childComment, child, childReplies));
+            }
+        }
+        return replies;
+    }
+}

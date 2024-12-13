@@ -18,10 +18,11 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 
 import java.io.IOException;
+import java.util.List;
 
 /**
  * JWT 인증 필터는 요청 당 한 번만 실행되는 것이 적합하다.
- * OncePerRequestFilter는 SpringSecurity에서 제공하는 요청 당 한 번만 실행되는 필터이다.
+ * OncePerRequestFilter는 SpringSecurity에서 제공하�� 요청 당 한 번만 실행되는 필터이다.
  * 해당 클래스를 상속받아서 구현하자.
  */
 @Slf4j
@@ -55,10 +56,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 if (StringUtils.hasText(jwt) && jwtTokenProvider.validateToken(jwt)) {
                     // 3. 사용자 정보 추출
                     String username = jwtTokenProvider.extractUserId(jwt);
-                    UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+                    String roles = jwtTokenProvider.extractRoles(jwt);
+                    //  EX > "ROLE_USER, ROLE_ADMIN" -> ["ROLE_USER", "ROLE_ADMIN"] 형태로 변환
+                    List<String> roleList = List.of(roles.split(","));
+
+                    // CustomPrincipal 생성
+                    CustomPrincipal customPrincipal = new CustomPrincipal(username, roleList);
 
                     // 4. 인증 객체 생성 및 SecurityContext에 설정
-                    UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                    // CustomPrincipal.getAuthorities() : GrantedAuthority 타입으로 변환된 역할 목록을 반환
+                    // EX > ["ROLE_USER", "ROLE_ADMIN"] -> [SimpleGrantedAuthority("ROLE_USER"), SimpleGrantedAuthority("ROLE_ADMIN")]  
+                    UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(customPrincipal, null, customPrincipal.getAuthorities());
                     authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
                     SecurityContextHolder.getContext().setAuthentication(authentication);

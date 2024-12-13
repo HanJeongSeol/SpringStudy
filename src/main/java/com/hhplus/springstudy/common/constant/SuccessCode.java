@@ -17,7 +17,13 @@ public enum SuccessCode {
     BOARD_READ_SUCCESS(HttpStatus.OK, "게시물 조회 성공"),
     BOARD_CREATE_SUCCESS(HttpStatus.CREATED, "게시물 등록 성공"),
     BOARD_UPDATE_SUCCESS(HttpStatus.OK, "게시물 수정 성공"),
-    BOARD_DELETE_SUCCESS(HttpStatus.OK, "게시물 삭제 성공");
+    BOARD_DELETE_SUCCESS(HttpStatus.OK, "게시물 삭제 성공"),
+    
+    // 댓글 관련 성공 코드
+    COMMENT_ALL_READ_SUCCESS(HttpStatus.OK, "전체 댓글 조회 성공"),
+    COMMENT_CREATE_SUCCESS(HttpStatus.CREATED, "댓글 등록 성공"),
+    COMMENT_UPDATE_SUCCESS(HttpStatus.OK, "댓글 수정 성공"),
+    COMMENT_DELETE_SUCCESS(HttpStatus.OK, "댓글 삭제 성공");
 
 
     private final HttpStatus httpStatus;

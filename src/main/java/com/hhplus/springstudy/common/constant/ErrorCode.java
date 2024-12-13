@@ -26,6 +26,13 @@ public enum ErrorCode {
     // 게시글 관련 에러 코드
     POST_ENTITY_NOT_FOUND(HttpStatus.NOT_FOUND, "게시글이 존재하지 않습니다."),
 
+    // 댓글 관련 에러 코드
+    COMMENT_CONTENT_EMPTY(HttpStatus.BAD_REQUEST, "댓글 내용이 비어있습니다."),
+    COMMENT_PARENT_COMMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "부모 댓글이 존재하지 않습니다."),
+    COMMENT_ALREADY_DELETED(HttpStatus.GONE, "이미 삭제된 댓글입니다."),
+    COMMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "댓글이 존재하지 않습니다."),
+    COMMENT_HIERARCHY_NOT_FOUND(HttpStatus.NOT_FOUND, "댓글 계층 정보가 존재하지 않습니다."),
+
     // 권한 관련 에러 코드
     ACCESS_DENIED(HttpStatus.FORBIDDEN, "접근 권한이 없습니다."),
     ROLE_ENTITY_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 권한이 존재하지 않습니다.");

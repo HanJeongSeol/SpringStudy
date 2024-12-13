@@ -17,20 +17,15 @@ import java.util.stream.Collectors;
 @Getter
 public class CustomPrincipal {
     private String userId;
-    private final Collection<? extends GrantedAuthority> authorities;
+    private List<String> roles;
 
-    public CustomPrincipal(String userId, Collection<? extends GrantedAuthority> authorities) {
+    public CustomPrincipal(String userId, List<String> roles) {
         this.userId = userId;
-        this.authorities = authorities;
+        this.roles = roles;
     }
 
-    /**
-     * 콤마로 구분된 role 문자열을 GrantedAuthority 컬렉션으로 변환
-     * EX: "ROLE_USER, ROLE_ADMIN" -> [SimpleGrantedAuthority("ROLE_USER"), SimpleGrantedAuthority("ROLE_ADMIN ")]
-     */
-    public Collection<? extends GrantedAuthority> convertRolesToAuthorities(String roles) {
-        List<String> roleList = Arrays.asList(roles.split(","));
-        return roleList.stream()
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return roles.stream()
                 .map(SimpleGrantedAuthority::new)
                 .collect(Collectors.toList());
     }

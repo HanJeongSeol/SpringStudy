@@ -37,6 +37,7 @@ public class Comment extends BaseTimeEntity {
         this.commentContent = commentContent;
         this.post = post;
         this.user = user;
+        this.deleteAt = 0;
     }
 
     // 정적 팩토리 메서드 사용
